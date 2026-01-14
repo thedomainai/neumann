@@ -59,62 +59,73 @@ const PRIMITIVES = {
 /**
  * 2. Semantic Colors (意味的カラー定義)
  * UIコンポーネントが参照すべき色の役割定義
+ * CSS変数を使用してテーマ切り替えに対応
  */
 export const colors = {
-  // 背景色
+  // 背景色 - CSS変数で動的に変更
   background: {
-    base: PRIMITIVES.mono.black,        // アプリケーション全体の背景（漆黒）
-    layer1: PRIMITIVES.slate[950],      // サイドバー、エディタ背景
-    layer2: PRIMITIVES.slate[900],      // カード、パネル背景
-    layer3: PRIMITIVES.slate[800],      // ホバー状態
-    elevated: PRIMITIVES.slate[800],    // モーダル、ドロップダウン
+    base: 'var(--color-bg-base)',
+    layer1: 'var(--color-bg-layer1)',
+    layer2: 'var(--color-bg-layer2)',
+    layer3: 'var(--color-bg-layer3)',
+    elevated: 'var(--color-bg-elevated)',
   },
 
-  // テキストカラー
+  // サイドバー専用カラー
+  sidebar: {
+    bg: 'var(--color-sidebar-bg)',
+    text: 'var(--color-sidebar-text)',
+    textActive: 'var(--color-sidebar-text-active)',
+    hover: 'var(--color-sidebar-hover)',
+    active: 'var(--color-sidebar-active)',
+    border: 'var(--color-sidebar-border)',
+  },
+
+  // テキストカラー - CSS変数で動的に変更
   text: {
-    primary: PRIMITIVES.slate[50],      // 本文、見出し
-    secondary: PRIMITIVES.slate[400],   // 補足、メタデータ
-    muted: PRIMITIVES.slate[600],       // 無効、プレースホルダー
-    inverse: PRIMITIVES.mono.black,     // 反転色（ボタンテキスト等）
+    primary: 'var(--color-text-primary)',
+    secondary: 'var(--color-text-secondary)',
+    muted: 'var(--color-text-muted)',
+    inverse: 'var(--color-text-inverse)',
   },
 
-  // アクセント（アクション）
+  // アクセント（アクション）- CSS変数で動的に変更
   accent: {
-    primary: PRIMITIVES.indigo[500],
-    hover: PRIMITIVES.indigo[400],
-    active: PRIMITIVES.indigo[600],
-    subtle: PRIMITIVES.indigo[900],     // 背景に敷く薄いアクセント
-    text: PRIMITIVES.indigo[300],
+    primary: 'var(--color-primary)',
+    hover: 'var(--color-primary-hover)',
+    active: 'var(--color-primary)',
+    subtle: 'var(--color-primary-light)',
+    text: 'var(--color-accent)',
   },
 
-  // ボーダー
+  // ボーダー - CSS変数で動的に変更
   border: {
-    default: PRIMITIVES.slate[800],     // 区切り線
-    subtle: PRIMITIVES.slate[900],
-    active: PRIMITIVES.indigo[500],     // フォーカス時
+    default: 'var(--color-border-default)',
+    subtle: 'var(--color-border-subtle)',
+    active: 'var(--color-border-active)',
   },
 
-  // 状態・信号色 (Severity)
+  // 状態・信号色 (Severity) - ライトテーマ用
   severity: {
     critical: {
-      text: '#f87171', // Red-400
-      bg: '#450a0a',   // Red-950 (Alpha調整用)
-      border: '#991b1b' // Red-800
+      text: 'var(--color-critical-text)',
+      bg: 'var(--color-critical-bg)',
+      border: 'var(--color-critical-border)'
     },
     warning: {
-      text: '#fbbf24', // Amber-400
-      bg: '#451a03',   // Amber-950
-      border: '#92400e' // Amber-800
+      text: 'var(--color-warning-text)',
+      bg: 'var(--color-warning-bg)',
+      border: 'var(--color-warning-border)'
     },
     info: {
-      text: '#60a5fa', // Blue-400
-      bg: '#172554',   // Blue-950
-      border: '#1e40af' // Blue-800
+      text: 'var(--color-info-text)',
+      bg: 'var(--color-info-bg)',
+      border: 'var(--color-info-border)'
     },
     success: {
-      text: '#34d399', // Emerald-400
-      bg: '#022c22',   // Emerald-950
-      border: '#065f46' // Emerald-800
+      text: 'var(--color-success-text)',
+      bg: 'var(--color-success-bg)',
+      border: 'var(--color-success-border)'
     }
   }
 } as const;
@@ -162,13 +173,16 @@ export const spacing = {
 /**
  * ユーティリティ関数: 重要度に応じたTailwindクラス名を返す
  * (動的なスタイル適用に使用)
+ *
+ * @param severity - 'critical' | 'warning' | 'info' (SeverityLevel from domain)
+ *                   'success' はUI専用（解決済み表示等）
  */
-export function getSeverityStyles(severity: 'critical' | 'warning' | 'info' | 'success') {
-  const map = {
-    critical: 'text-red-400 bg-red-950/30 border-red-900/50',
-    warning: 'text-amber-400 bg-amber-950/30 border-amber-900/50',
-    info: 'text-blue-400 bg-blue-950/30 border-blue-900/50',
-    success: 'text-emerald-400 bg-emerald-950/30 border-emerald-900/50',
+export function getSeverityStyles(severity: 'critical' | 'warning' | 'info' | 'success'): string {
+  const map: Record<typeof severity, string> = {
+    critical: 'text-severity-critical-text bg-severity-critical-bg border-severity-critical-border',
+    warning: 'text-severity-warning-text bg-severity-warning-bg border-severity-warning-border',
+    info: 'text-severity-info-text bg-severity-info-bg border-severity-info-border',
+    success: 'text-severity-success-text bg-severity-success-bg border-severity-success-border',
   };
   return map[severity];
 }
@@ -191,10 +205,12 @@ export const tailwindThemeExtend = {
   colors: {
     // セマンティックカラーを展開
     background: colors.background,
+    sidebar: colors.sidebar,
     foreground: colors.text,
     accent: colors.accent,
     border: colors.border,
-    
+    severity: colors.severity,
+
     // プリミティブも必要に応じて直接使えるようにする
     indigo: PRIMITIVES.indigo,
     slate: PRIMITIVES.slate,

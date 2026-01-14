@@ -8,6 +8,7 @@ export type {
   SeverityLevel,
   AuditItemStatus,
   TextRange,
+  AuditLocation,
   AuditItem,
   AuditResult,
   ScoreThresholds,

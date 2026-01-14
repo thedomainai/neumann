@@ -100,7 +100,7 @@ export function useAuditLog(initialResult?: AuditResult): UseAuditLogReturn {
       setItems((prev) =>
         prev.map((item) =>
           item.id === itemId
-            ? { ...item, status: 'dismissed', dismissReason: reason }
+            ? { ...item, status: 'dismissed' as const, dismissReason: reason }
             : item
         )
       );
@@ -120,7 +120,7 @@ export function useAuditLog(initialResult?: AuditResult): UseAuditLogReturn {
       setItems((prev) =>
         prev.map((item) =>
           item.id === itemId
-            ? { ...item, status: 'resolved', resolvedAt: new Date() }
+            ? { ...item, status: 'resolved' as const, resolvedAt: new Date() }
             : item
         )
       );
@@ -133,7 +133,7 @@ export function useAuditLog(initialResult?: AuditResult): UseAuditLogReturn {
     setItems((prev) =>
       prev.map((item) =>
         item.id === itemId
-          ? { ...item, status: 'open', resolvedAt: undefined, dismissReason: undefined }
+          ? { ...item, status: 'open' as const, resolvedAt: undefined, dismissReason: undefined }
           : item
       )
     );

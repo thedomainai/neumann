@@ -53,7 +53,7 @@ export const AuditPanel: FC<AuditPanelProps> = ({
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-medium text-foreground-primary">{title}</h2>
           {openCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-red-950/30 text-red-400">
+            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-severity-critical-bg text-severity-critical-text border border-severity-critical-border">
               {openCount}
             </span>
           )}
@@ -279,7 +279,7 @@ const AuditItemCard: FC<{
           <button
             onClick={onResolve}
             disabled={disabled}
-            className="px-3 py-1 text-xs font-medium rounded bg-emerald-950/30 text-emerald-400 border border-emerald-900/50 hover:bg-emerald-950/50 transition-colors disabled:opacity-50"
+            className="px-3 py-1 text-xs font-medium rounded bg-severity-success-bg text-severity-success-text border border-severity-success-border hover:shadow-sm transition-colors disabled:opacity-50"
           >
             解決済み
           </button>
@@ -312,7 +312,7 @@ const AuditItemCard: FC<{
             <button
               onClick={handleDismiss}
               disabled={!dismissReason.trim() || disabled}
-              className="px-3 py-1 text-xs font-medium rounded bg-amber-950/30 text-amber-400 border border-amber-900/50 hover:bg-amber-950/50 transition-colors disabled:opacity-50"
+              className="px-3 py-1 text-xs font-medium rounded bg-severity-warning-bg text-severity-warning-text border border-severity-warning-border hover:shadow-sm transition-colors disabled:opacity-50"
             >
               却下する
             </button>
