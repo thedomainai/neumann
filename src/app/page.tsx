@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { Sidebar, type ViewType } from '@/shared/components';
 import { DashboardView } from '@/features/dashboard';
 import { EditorView, AuditPanel, useAuditLog } from '@/features/editor';
+import { SettingsView, DataEntryView } from '@/features/settings';
 import type { KPITreeNode } from '@/domain/kpi/types';
 import type { AuditResult } from '@/domain/audit/types';
 
@@ -178,9 +179,10 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-hidden">
-        {currentView === 'dashboard' ? (
+        {currentView === 'dashboard' && (
           <DashboardView kpiData={KPI_TREE_DATA} onNavigate={setCurrentView} />
-        ) : (
+        )}
+        {currentView === 'editor' && (
           <EditorView
             fileName="Enterprise_Sales_Weekly.md"
             owner="M. Tanaka"
@@ -198,6 +200,8 @@ export default function Home() {
             }
           />
         )}
+        {currentView === 'data-entry' && <DataEntryView />}
+        {currentView === 'settings' && <SettingsView />}
       </main>
     </div>
   );

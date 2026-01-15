@@ -8,9 +8,9 @@
 'use client';
 
 import { type FC } from 'react';
-import { Layout, FileText, Search, Cpu } from 'lucide-react';
+import { Layout, FileText, Database, Settings, Cpu } from 'lucide-react';
 
-export type ViewType = 'dashboard' | 'editor';
+export type ViewType = 'dashboard' | 'editor' | 'data-entry' | 'settings';
 
 export interface SidebarProps {
   currentView: ViewType;
@@ -31,17 +31,25 @@ export const Sidebar: FC<SidebarProps> = ({ currentView, onNavigate }) => {
           icon={<Layout size={20} />}
           active={currentView === 'dashboard'}
           onClick={() => onNavigate('dashboard')}
+          tooltip="ダッシュボード"
         />
         <NavButton
           icon={<FileText size={20} />}
           active={currentView === 'editor'}
           onClick={() => onNavigate('editor')}
+          tooltip="レポート確認"
         />
         <NavButton
-          icon={<Search size={20} />}
-          active={false}
-          onClick={() => {}}
-          disabled
+          icon={<Database size={20} />}
+          active={currentView === 'data-entry'}
+          onClick={() => onNavigate('data-entry')}
+          tooltip="データ入力"
+        />
+        <NavButton
+          icon={<Settings size={20} />}
+          active={currentView === 'settings'}
+          onClick={() => onNavigate('settings')}
+          tooltip="設定"
         />
       </div>
 
@@ -60,11 +68,13 @@ const NavButton: FC<{
   active: boolean;
   onClick: () => void;
   disabled?: boolean;
-}> = ({ icon, active, onClick, disabled }) => {
+  tooltip?: string;
+}> = ({ icon, active, onClick, disabled, tooltip }) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      title={tooltip}
       className={`w-full p-3 flex justify-center rounded-lg transition-all ${
         active
           ? 'text-sidebar-textActive bg-sidebar-active'

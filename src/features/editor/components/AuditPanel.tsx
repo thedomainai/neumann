@@ -94,7 +94,7 @@ export const AuditPanel: FC<AuditPanelProps> = ({
       )}
 
       {/* Items List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {items.length === 0 ? (
           <EmptyState status={filter.status} />
         ) : (
@@ -211,6 +211,31 @@ const EmptyState: FC<{ status?: string }> = ({ status }) => {
 };
 
 /**
+ * 重要度アイコン
+ */
+const SeverityIcon: FC<{ severity: 'critical' | 'warning' | 'info' }> = ({ severity }) => {
+  if (severity === 'critical') {
+    return (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    );
+  }
+  if (severity === 'warning') {
+    return (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  }
+  return (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  );
+};
+
+/**
  * 監査項目カード
  */
 const AuditItemCard: FC<{
@@ -240,54 +265,71 @@ const AuditItemCard: FC<{
 
   return (
     <div
-      className={`p-3 rounded-lg border transition-colors ${
+      className={`p-4 rounded-xl border-2 transition-all ${
         isOpen
-          ? 'bg-background-layer3 border-border-default hover:border-border-active'
+          ? 'bg-background-layer1 border-border-default hover:border-border-active hover:shadow-md'
           : 'bg-background-layer2 border-border-subtle opacity-60'
       } ${disabled ? 'pointer-events-none opacity-50' : ''}`}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <div className={`flex items-center gap-2 px-2 py-0.5 rounded text-xs font-medium border ${severityStyles}`}>
-          {PATTERN_LABELS[item.pattern]}
+      {/* Header - Pattern Label */}
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold border-2 ${severityStyles}`}>
+          <SeverityIcon severity={item.severity} />
+          <span>{PATTERN_LABELS[item.pattern]}</span>
         </div>
         {item.status !== 'open' && (
-          <span className="text-xs text-foreground-muted">
-            {item.status === 'resolved' ? '解決済み' : '却下'}
+          <span className={`text-sm font-medium px-2 py-1 rounded ${
+            item.status === 'resolved'
+              ? 'bg-severity-success-bg text-severity-success-text'
+              : 'bg-background-layer3 text-foreground-muted'
+          }`}>
+            {item.status === 'resolved' ? '✓ 解決済み' : '✗ 却下'}
           </span>
         )}
       </div>
 
       {/* Message */}
-      <p className="text-sm text-foreground-primary mb-2">{item.message}</p>
+      <p className="text-base text-foreground-primary mb-3 leading-relaxed">{item.message}</p>
 
       {/* Rationale (if exists) */}
       {item.rationale && (
-        <p className="text-xs text-foreground-secondary mb-2 pl-3 border-l-2 border-border-default">
-          {item.rationale}
-        </p>
+        <div className="mb-3 p-3 bg-background-layer2 rounded-lg border border-border-subtle">
+          <p className="text-sm text-foreground-secondary leading-relaxed">
+            <span className="font-medium text-foreground-muted">理由: </span>
+            {item.rationale}
+          </p>
+        </div>
       )}
 
       {/* Suggestion */}
-      <p className="text-xs text-accent-text mb-3 pl-3 border-l-2 border-accent-primary">
-        {item.suggestion}
-      </p>
+      <div className="mb-4 p-3 bg-accent-subtle rounded-lg border border-accent-primary/30">
+        <p className="text-sm text-accent-text leading-relaxed">
+          <span className="font-bold">💡 提案: </span>
+          {item.suggestion}
+        </p>
+      </div>
 
       {/* Actions */}
       {isOpen && !showDismissInput && (
-        <div className="flex gap-2">
+        <div className="flex gap-3 pt-2 border-t border-border-subtle">
           <button
             onClick={onResolve}
             disabled={disabled}
-            className="px-3 py-1 text-xs font-medium rounded bg-severity-success-bg text-severity-success-text border border-severity-success-border hover:shadow-sm transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold rounded-lg bg-severity-success-bg text-severity-success-text border-2 border-severity-success-border hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:hover:scale-100"
           >
-            解決済み
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            解決済みにする
           </button>
           <button
             onClick={() => setShowDismissInput(true)}
             disabled={disabled}
-            className="px-3 py-1 text-xs font-medium rounded bg-background-elevated text-foreground-secondary border border-border-default hover:text-foreground-primary transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-background-elevated text-foreground-secondary border-2 border-border-default hover:border-foreground-muted hover:text-foreground-primary hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-50"
           >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
             却下
           </button>
         </div>
@@ -295,30 +337,36 @@ const AuditItemCard: FC<{
 
       {/* Dismiss Reason Input */}
       {isOpen && showDismissInput && (
-        <div className="space-y-2">
+        <div className="space-y-3 pt-3 border-t border-border-subtle">
+          <label className="block text-sm font-medium text-foreground-secondary">
+            却下理由を入力してください
+          </label>
           <input
             type="text"
             value={dismissReason}
             onChange={(e) => setDismissReason(e.target.value)}
-            placeholder="却下理由を入力（必須）"
-            className="w-full px-3 py-1.5 text-xs rounded bg-background-layer1 border border-border-default text-foreground-primary placeholder:text-foreground-muted focus:outline-none focus:border-accent-primary"
+            placeholder="例: 別途対応済み、仕様として許容 など"
+            className="w-full px-4 py-2.5 text-sm rounded-lg bg-background-layer1 border-2 border-border-default text-foreground-primary placeholder:text-foreground-muted focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
             autoFocus
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleDismiss();
               if (e.key === 'Escape') handleCancel();
             }}
           />
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={handleDismiss}
               disabled={!dismissReason.trim() || disabled}
-              className="px-3 py-1 text-xs font-medium rounded bg-severity-warning-bg text-severity-warning-text border border-severity-warning-border hover:shadow-sm transition-colors disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold rounded-lg bg-severity-warning-bg text-severity-warning-text border-2 border-severity-warning-border hover:shadow-md active:scale-[0.98] transition-all disabled:opacity-50"
             >
-              却下する
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              この指摘を却下する
             </button>
             <button
               onClick={handleCancel}
-              className="px-3 py-1 text-xs font-medium rounded bg-background-elevated text-foreground-secondary hover:text-foreground-primary transition-colors"
+              className="px-4 py-2.5 text-sm font-medium rounded-lg bg-background-elevated text-foreground-secondary border-2 border-border-default hover:text-foreground-primary transition-colors"
             >
               キャンセル
             </button>
@@ -328,9 +376,11 @@ const AuditItemCard: FC<{
 
       {/* Dismissed Reason Display */}
       {item.status === 'dismissed' && item.dismissReason && (
-        <p className="text-xs text-foreground-muted mt-2">
-          却下理由: {item.dismissReason}
-        </p>
+        <div className="mt-3 p-2 bg-background-layer3 rounded-lg">
+          <p className="text-sm text-foreground-muted">
+            <span className="font-medium">却下理由:</span> {item.dismissReason}
+          </p>
+        </div>
       )}
     </div>
   );
