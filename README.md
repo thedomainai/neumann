@@ -8,12 +8,14 @@ neumannは、週次ミーティングレポートの曖昧性を自動検出し�
 
 ## Documentation
 
-詳細なドキュメントは [neumann-docs](../neumann-docs/) を参照してください：
+詳細なドキュメントは [docs/](./docs/) を参照してください：
 
-- [Vision](../neumann-docs/00_vision/) - プロジェクトビジョン
-- [Concept](../neumann-docs/01_concept/) - コンセプト・設計思想
-- [Product](../neumann-docs/02_product/) - プロダクト仕様・アーキテクチャ
-- [Decisions](../neumann-docs/05_decisions/) - 意思決定記録
+- [Vision](./docs/00_vision/) - プロジェクトビジョン
+- [Concept](./docs/01_concept/) - コンセプト・設計思想
+- [Product](./docs/02_product/) - プロダクト仕様・アーキテクチャ
+- [Validation](./docs/03_validation/) - 仮説検証・PoC
+- [Business](./docs/04_business/) - ビジネスモデル・市場分析
+- [Decisions](./docs/05_decisions/) - 意思決定記録
 
 ## Tech Stack
 
