@@ -20,6 +20,12 @@
 
 経営者は時間がない。一目で状況を把握でき、必要なときだけ詳細に潜れるUIを提供する。
 
+## Preview
+
+![Dashboard Preview](./preview-dashboard.png)
+
+*ダッシュボード画面のデザインイメージ*
+
 ## Contents
 
 | ドキュメント | 内容 |
