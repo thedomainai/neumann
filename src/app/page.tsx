@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Sidebar, type ViewType } from '@/shared/components';
 import { DashboardView } from '@/features/dashboard';
 import { EditorView, AuditPanel, useAuditLog } from '@/features/editor';
 import { SettingsView, DataEntryView } from '@/features/settings';
 import type { KPITreeNode } from '@/domain/kpi/types';
 import type { AuditResult } from '@/domain/audit/types';
+import { analyzeReport } from '@/app/actions/audit';
 
 /**
  * モックデータ: KPI Tree
@@ -156,9 +157,11 @@ const MOCK_AUDIT_RESULT: AuditResult = {
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [selectedLine, setSelectedLine] = useState<number | null>(null);
+  const [reportContent, setReportContent] = useState(INITIAL_REPORT_CONTENT);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // AuditPanel 用の Hook
-  const auditLog = useAuditLog(MOCK_AUDIT_RESULT);
+  // AuditPanel 用の Hook - 初期状態は空
+  const auditLog = useAuditLog();
 
   // 警告がある行番号の配列を生成
   const warningLines = useMemo(() => {
@@ -171,6 +174,23 @@ export default function Home() {
   const handleLineClick = (lineNumber: number) => {
     setSelectedLine(lineNumber);
   };
+
+  // Linter実行ハンドラー - Server Actionを呼び出す
+  const handleRunLinter = useCallback(async () => {
+    setIsAnalyzing(true);
+    try {
+      const result = await analyzeReport(reportContent, {
+        kpiName: 'Enterprise Sales',
+        reporterRole: 'Sales Manager',
+        reportPeriod: '2025-10-12',
+      });
+      auditLog.updateResult(result);
+    } catch (error) {
+      console.error('Analysis failed:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [reportContent, auditLog]);
 
   return (
     <div className="flex h-screen bg-background-base text-foreground-primary overflow-hidden">
@@ -186,14 +206,18 @@ export default function Home() {
           <EditorView
             fileName="Enterprise_Sales_Weekly.md"
             owner="M. Tanaka"
-            content={INITIAL_REPORT_CONTENT}
+            content={reportContent}
             ambiguityPercent={100 - auditLog.score}
             warningLines={warningLines}
             selectedLine={selectedLine}
             onLineClick={handleLineClick}
+            onRunLinter={handleRunLinter}
             sidePanel={
               <AuditPanel
-                auditLog={auditLog}
+                auditLog={{
+                  ...auditLog,
+                  isProcessing: isAnalyzing || auditLog.isProcessing,
+                }}
                 title="NEUMANN_AUDIT_LOG"
                 className="h-full rounded-none border-0"
               />
