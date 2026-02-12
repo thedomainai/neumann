@@ -46,7 +46,7 @@ export const AuditPanel: FC<AuditPanelProps> = ({
 
   return (
     <div
-      className={`flex flex-col h-full bg-background-layer2 rounded-lg border border-border-default ${className}`}
+      className={`flex flex-col h-full glass-panel rounded-lg ${className}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border-default">

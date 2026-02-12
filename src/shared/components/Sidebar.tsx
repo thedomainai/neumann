@@ -19,7 +19,7 @@ export interface SidebarProps {
 
 export const Sidebar: FC<SidebarProps> = ({ currentView, onNavigate }) => {
   return (
-    <nav className="w-16 flex flex-col items-center py-6 bg-sidebar-bg">
+    <nav className="w-16 flex flex-col items-center py-6 bg-sidebar-bg glass-panel border-r border-sidebar-border">
       {/* Logo */}
       <div className="mb-8">
         <Cpu className="w-8 h-8 text-sidebar-textActive" strokeWidth={1.5} />
