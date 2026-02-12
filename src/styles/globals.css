@@ -3,8 +3,14 @@
 @tailwind utilities;
 
 /**
- * Midnight Logic - Global Styles
+ * AI-Native Glassmorphism - Global Styles
  * neumannのデザインシステム基盤
+ *
+ * Design Direction: D (Advanced, AI, Future) + Glassmorphism
+ * - Dark gradient background
+ * - Glass effect cards (blur, transparency)
+ * - Purple/Blue/Cyan accent colors
+ * - Glow effects
  */
 
 @layer base {
@@ -13,56 +19,63 @@
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
   /* ===========================================
-   * Executive Navy カラーシステム
-   * 重厚・権威・規律を表現するプロフェッショナルなデザイン
+   * AI-Native Glassmorphism カラーシステム
+   * ダークモード + ガラス効果 + グロー
    * =========================================== */
 
   :root {
-    /* ブランドカラー */
-    --color-primary: #1E293B;
-    --color-primary-hover: #0F172A;
-    --color-primary-light: #F1F5F9;
-    --color-accent: #334155;
+    /* ブランドカラー - Purple/Indigo ベース */
+    --color-primary: #8B5CF6;
+    --color-primary-hover: #A78BFA;
+    --color-primary-light: rgba(139, 92, 246, 0.15);
+    --color-accent: #06B6D4;
 
-    /* サイドバー */
-    --color-sidebar-bg: #0F172A;
+    /* サイドバー - 深いダーク + ガラス */
+    --color-sidebar-bg: rgba(15, 23, 42, 0.95);
     --color-sidebar-text: rgba(255, 255, 255, 0.7);
     --color-sidebar-text-active: #FFFFFF;
-    --color-sidebar-hover: rgba(255, 255, 255, 0.05);
-    --color-sidebar-active: rgba(255, 255, 255, 0.1);
-    --color-sidebar-border: rgba(255, 255, 255, 0.1);
+    --color-sidebar-hover: rgba(139, 92, 246, 0.1);
+    --color-sidebar-active: rgba(139, 92, 246, 0.2);
+    --color-sidebar-border: rgba(139, 92, 246, 0.2);
 
-    /* 背景色 */
-    --color-bg-base: #F8FAFC;
-    --color-bg-layer1: #FFFFFF;
-    --color-bg-layer2: #F8FAFC;
-    --color-bg-layer3: #F1F5F9;
-    --color-bg-elevated: #FFFFFF;
+    /* 背景色 - ダークグラデーション */
+    --color-bg-base: #030712;
+    --color-bg-layer1: rgba(15, 23, 42, 0.8);
+    --color-bg-layer2: rgba(30, 41, 59, 0.6);
+    --color-bg-layer3: rgba(51, 65, 85, 0.4);
+    --color-bg-elevated: rgba(30, 41, 59, 0.9);
 
-    /* テキストカラー */
-    --color-text-primary: #0F172A;
-    --color-text-secondary: #334155;
+    /* テキストカラー - 高コントラスト */
+    --color-text-primary: #F8FAFC;
+    --color-text-secondary: #CBD5E1;
     --color-text-muted: #64748B;
-    --color-text-inverse: #FFFFFF;
+    --color-text-inverse: #0F172A;
 
-    /* ボーダー */
-    --color-border-default: #E2E8F0;
-    --color-border-subtle: #F1F5F9;
-    --color-border-active: #1E293B;
+    /* ボーダー - 微妙なガラス境界 */
+    --color-border-default: rgba(148, 163, 184, 0.2);
+    --color-border-subtle: rgba(148, 163, 184, 0.1);
+    --color-border-active: rgba(139, 92, 246, 0.5);
 
-    /* ステータスカラー */
-    --color-critical-bg: #FEF2F2;
-    --color-critical-border: #FECACA;
-    --color-critical-text: #DC2626;
-    --color-warning-bg: #FFFBEB;
-    --color-warning-border: #FDE68A;
-    --color-warning-text: #D97706;
-    --color-success-bg: #F0FDF4;
-    --color-success-border: #BBF7D0;
-    --color-success-text: #16A34A;
-    --color-info-bg: #EFF6FF;
-    --color-info-border: #BFDBFE;
-    --color-info-text: #2563EB;
+    /* ステータスカラー - ダークモード用 */
+    --color-critical-bg: rgba(239, 68, 68, 0.15);
+    --color-critical-border: rgba(239, 68, 68, 0.3);
+    --color-critical-text: #F87171;
+    --color-warning-bg: rgba(245, 158, 11, 0.15);
+    --color-warning-border: rgba(245, 158, 11, 0.3);
+    --color-warning-text: #FBBF24;
+    --color-success-bg: rgba(16, 185, 129, 0.15);
+    --color-success-border: rgba(16, 185, 129, 0.3);
+    --color-success-text: #34D399;
+    --color-info-bg: rgba(6, 182, 212, 0.15);
+    --color-info-border: rgba(6, 182, 212, 0.3);
+    --color-info-text: #22D3EE;
+
+    /* Glassmorphism 効果用 */
+    --glass-blur: 16px;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glow-primary: rgba(139, 92, 246, 0.4);
+    --glow-accent: rgba(6, 182, 212, 0.4);
   }
 
   html {
@@ -72,6 +85,10 @@
   body {
     @apply bg-background-base text-foreground-primary;
     font-family: 'Inter', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    /* ダークグラデーション背景 */
+    background: linear-gradient(135deg, #030712 0%, #0F172A 50%, #1E1B4B 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 
   /* スクロールバーのスタイリング（Chrome/Safari） */
@@ -80,15 +97,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-background-layer2;
+    background: rgba(15, 23, 42, 0.5);
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-background-layer3 rounded-full;
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-secondary);
+    background: rgba(139, 92, 246, 0.5);
   }
 }
 
@@ -96,5 +114,127 @@
   /* 共通のフォーカススタイル */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-background-base;
+  }
+
+  /* Glassmorphism カード */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+  }
+
+  /* Glassmorphism パネル */
+  .glass-panel {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  /* グロー効果 - Primary */
+  .glow-primary {
+    box-shadow: 0 0 20px var(--glow-primary), 0 0 40px rgba(139, 92, 246, 0.2);
+  }
+
+  /* グロー効果 - Accent (Cyan) */
+  .glow-accent {
+    box-shadow: 0 0 20px var(--glow-accent), 0 0 40px rgba(6, 182, 212, 0.2);
+  }
+
+  /* グラデーションテキスト */
+  .gradient-text {
+    background: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* グラデーションボーダー */
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2));
+    border-radius: 16px;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ホバー時のグロー */
+  .hover-glow {
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* アニメーション付きグラデーション背景 */
+  .animated-gradient {
+    background: linear-gradient(-45deg, #030712, #1E1B4B, #0F172A, #312E81);
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* パルス効果（ステータスインジケーター用） */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 5px var(--glow-primary); }
+    50% { box-shadow: 0 0 20px var(--glow-primary), 0 0 30px rgba(139, 92, 246, 0.3); }
+  }
+}
+
+@layer utilities {
+  /* テキストシャドウ（グロー効果） */
+  .text-glow {
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+
+  .text-glow-accent {
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+  }
+
+  /* 背景ブラー */
+  .bg-blur-sm {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .bg-blur {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .bg-blur-lg {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .bg-blur-xl {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
   }
 }
