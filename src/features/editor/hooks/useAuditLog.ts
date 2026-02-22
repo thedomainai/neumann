@@ -66,7 +66,7 @@ export function useAuditLog(initialResult?: AuditResult): UseAuditLogReturn {
   const [filter, setFilter] = useState<AuditLogFilter>({
     status: 'open',
     pattern: 'all',
-    severity: 'all',
+    severity: 'critical', // ★ Progressive Disclosure: 初期は Critical のみ表示
   });
   
   const [isProcessing, setIsProcessing] = useState(false);

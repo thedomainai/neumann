@@ -10,10 +10,13 @@
 
 'use client';
 
-import { type FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { getSeverityStyles, getScoreColor } from '@/lib/theme';
 import { PATTERN_LABELS, type AuditItem } from '@/domain/audit/types';
 import { type UseAuditLogReturn } from '../hooks/useAuditLog';
+import { useScoreHistory } from '../hooks/useScoreHistory';
+import { FactCardList } from './FactCard';
+import { inferFactsFromAmbiguity, formatFactAsText } from '@/domain/audit/fact-gathering';
 
 /**
  * AuditPanel Props
@@ -44,6 +47,30 @@ export const AuditPanel: FC<AuditPanelProps> = ({
   const { items, openCount, score, filter, setFilter, dismiss, resolve, isProcessing } =
     auditLog;
 
+  // Visual Feedback: スコア履歴管理
+  const { previousScore, scoreDiff, recordScore } = useScoreHistory(score);
+
+  // スコアが変更されたら履歴に記録
+  useEffect(() => {
+    if (score !== previousScore && score > 0) {
+      recordScore(score);
+    }
+  }, [score, previousScore, recordScore]);
+
+  // Progressive Disclosure: 初回ヒントメッセージ管理
+  const [showHint, setShowHint] = useState(false);
+  useEffect(() => {
+    const hintDismissed = localStorage.getItem('neumann_progressive_disclosure_hint_dismissed');
+    if (!hintDismissed && filter.severity === 'critical') {
+      setShowHint(true);
+    }
+  }, [filter.severity]);
+
+  const dismissHint = () => {
+    setShowHint(false);
+    localStorage.setItem('neumann_progressive_disclosure_hint_dismissed', 'true');
+  };
+
   return (
     <div
       className={`flex flex-col h-full bg-background-layer2 rounded-lg border border-border-default ${className}`}
@@ -58,30 +85,71 @@ export const AuditPanel: FC<AuditPanelProps> = ({
             </span>
           )}
         </div>
-        <ScoreBadge score={score} />
+        <ScoreBadge score={score} scoreDiff={scoreDiff} />
       </div>
 
       {/* Filter */}
-      <div className="flex gap-2 p-3 border-b border-border-default">
-        <FilterButton
-          active={filter.status === 'open'}
-          onClick={() => setFilter({ ...filter, status: 'open' })}
-        >
-          未解決
-        </FilterButton>
-        <FilterButton
-          active={filter.status === 'all'}
-          onClick={() => setFilter({ ...filter, status: 'all' })}
-        >
-          すべて
-        </FilterButton>
-        <FilterButton
-          active={filter.status === 'resolved'}
-          onClick={() => setFilter({ ...filter, status: 'resolved' })}
-        >
-          解決済み
-        </FilterButton>
+      <div className="p-3 border-b border-border-default space-y-3">
+        {/* Status Filter */}
+        <div className="flex gap-2">
+          <FilterButton
+            active={filter.status === 'open'}
+            onClick={() => setFilter({ ...filter, status: 'open' })}
+          >
+            未解決
+          </FilterButton>
+          <FilterButton
+            active={filter.status === 'all'}
+            onClick={() => setFilter({ ...filter, status: 'all' })}
+          >
+            すべて
+          </FilterButton>
+          <FilterButton
+            active={filter.status === 'resolved'}
+            onClick={() => setFilter({ ...filter, status: 'resolved' })}
+          >
+            解決済み
+          </FilterButton>
+        </div>
+
+        {/* Severity Filter (Progressive Disclosure) */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-foreground-muted font-medium">表示:</span>
+          <FilterButton
+            active={filter.severity === 'critical'}
+            onClick={() => setFilter({ ...filter, severity: 'critical' })}
+          >
+            重要な問題のみ
+          </FilterButton>
+          <FilterButton
+            active={filter.severity === 'all'}
+            onClick={() => setFilter({ ...filter, severity: 'all' })}
+          >
+            すべて表示
+          </FilterButton>
+        </div>
       </div>
+
+      {/* Progressive Disclosure Hint */}
+      {showHint && (
+        <div className="mx-3 mt-3 p-3 bg-accent-subtle rounded-lg border border-accent-primary/30 flex items-start gap-3">
+          <div className="flex-1">
+            <p className="text-sm text-accent-text leading-relaxed">
+              <span className="font-bold">💡 ヒント: </span>
+              まずは重要な問題のみ表示しています。慣れてきたら「すべて表示」で詳細な指摘も確認できます。
+            </p>
+          </div>
+          <button
+            onClick={dismissHint}
+            className="text-accent-text hover:text-foreground-primary transition-colors"
+            aria-label="ヒントを閉じる"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Loading Overlay */}
       {isProcessing && (
@@ -114,20 +182,39 @@ export const AuditPanel: FC<AuditPanelProps> = ({
 };
 
 /**
- * スコアバッジ
+ * スコアバッジ（Visual Feedback 対応）
  */
-const ScoreBadge: FC<{ score: number }> = ({ score }) => {
+const ScoreBadge: FC<{ score: number; scoreDiff: number | null }> = ({ score, scoreDiff }) => {
   const color = getScoreColor(score);
 
   return (
-    <div
-      className="flex items-center gap-2 px-3 py-1 rounded-full"
-      style={{ backgroundColor: `${color}20` }}
-    >
-      <span className="text-sm font-medium" style={{ color }}>
-        {score}
-      </span>
-      <span className="text-xs text-foreground-secondary">/ 100</span>
+    <div className="flex items-center gap-3">
+      <div
+        className="flex items-center gap-2 px-3 py-1 rounded-full"
+        style={{ backgroundColor: `${color}20` }}
+      >
+        <span className="text-sm font-medium" style={{ color }}>
+          {score}
+        </span>
+        <span className="text-xs text-foreground-secondary">/ 100</span>
+      </div>
+      {scoreDiff !== null && (
+        <div
+          className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+            scoreDiff > 0
+              ? 'bg-severity-success-bg text-severity-success-text'
+              : scoreDiff < 0
+                ? 'bg-severity-warning-bg text-severity-warning-text'
+                : 'bg-background-layer3 text-foreground-muted'
+          }`}
+        >
+          {scoreDiff > 0 ? '↗' : scoreDiff < 0 ? '↘' : '→'}
+          <span>
+            {scoreDiff > 0 ? '+' : ''}
+            {scoreDiff}pt
+          </span>
+        </div>
+      )}
     </div>
   );
 };
@@ -308,6 +395,24 @@ const AuditItemCard: FC<{
           {item.suggestion}
         </p>
       </div>
+
+      {/* Autonomous Fact Gathering: AI が取得した情報 */}
+      {isOpen && (() => {
+        const facts = inferFactsFromAmbiguity(item);
+        if (facts.length === 0) return null;
+
+        return (
+          <div className="mb-4">
+            <FactCardList
+              facts={facts}
+              onCopy={(text) => {
+                navigator.clipboard.writeText(text);
+                // TODO: トースト通知を追加（v1.1）
+              }}
+            />
+          </div>
+        );
+      })()}
 
       {/* Actions */}
       {isOpen && !showDismissInput && (

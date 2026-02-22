@@ -8,9 +8,10 @@
 'use client';
 
 import { type FC } from 'react';
-import { Layout, FileText, Database, Settings, Cpu } from 'lucide-react';
+import { Layout, FileText, Cpu } from 'lucide-react';
 
-export type ViewType = 'dashboard' | 'editor' | 'data-entry' | 'settings';
+// v1.0: dashboard と editor のみ。data-entry と settings は v1.1 で実装
+export type ViewType = 'dashboard' | 'editor';
 
 export interface SidebarProps {
   currentView: ViewType;
@@ -38,18 +39,6 @@ export const Sidebar: FC<SidebarProps> = ({ currentView, onNavigate }) => {
           active={currentView === 'editor'}
           onClick={() => onNavigate('editor')}
           tooltip="レポート確認"
-        />
-        <NavButton
-          icon={<Database size={20} />}
-          active={currentView === 'data-entry'}
-          onClick={() => onNavigate('data-entry')}
-          tooltip="データ入力"
-        />
-        <NavButton
-          icon={<Settings size={20} />}
-          active={currentView === 'settings'}
-          onClick={() => onNavigate('settings')}
-          tooltip="設定"
         />
       </div>
 

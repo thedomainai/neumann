@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Sidebar, type ViewType } from '@/shared/components';
 import { DashboardView } from '@/features/dashboard';
 import { EditorView, AuditPanel, useAuditLog } from '@/features/editor';
-import { SettingsView, DataEntryView } from '@/features/settings';
 import type { KPITreeNode } from '@/domain/kpi/types';
 import type { AuditResult } from '@/domain/audit/types';
 
@@ -154,8 +154,22 @@ const MOCK_AUDIT_RESULT: AuditResult = {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [selectedLine, setSelectedLine] = useState<number | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  // 初回アクセス判定
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hasCompletedOnboarding = localStorage.getItem('neumann_onboarding_completed');
+      if (!hasCompletedOnboarding) {
+        router.push('/onboarding');
+      } else {
+        setIsReady(true);
+      }
+    }
+  }, [router]);
 
   // AuditPanel 用の Hook
   const auditLog = useAuditLog(MOCK_AUDIT_RESULT);
@@ -171,6 +185,20 @@ export default function Home() {
   const handleLineClick = (lineNumber: number) => {
     setSelectedLine(lineNumber);
   };
+
+  // オンボーディングチェック中はローディング表示
+  if (!isReady) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background-base">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent-primary mb-4 animate-pulse">
+            <span className="text-xl text-foreground-inverse">🔵</span>
+          </div>
+          <p className="text-foreground-muted">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-background-base text-foreground-primary overflow-hidden">
@@ -200,8 +228,6 @@ export default function Home() {
             }
           />
         )}
-        {currentView === 'data-entry' && <DataEntryView />}
-        {currentView === 'settings' && <SettingsView />}
       </main>
     </div>
   );

@@ -47,6 +47,9 @@ export const EditorView: FC<EditorViewProps> = ({
 }) => {
   const warningLineSet = new Set(warningLines);
 
+  // v1.0: RUN_LINTER は開発モードでのみ表示
+  const showLinterButton = process.env.NEXT_PUBLIC_ENABLE_LINTER_BUTTON === 'true';
+
   const renderContent = () => {
     return content.split('\n').map((line, index) => {
       const lineNum = index + 1;
@@ -110,12 +113,14 @@ export const EditorView: FC<EditorViewProps> = ({
               AMBIGUITY: {ambiguityPercent}%
             </span>
           </div>
-          <button
-            onClick={onRunLinter}
-            className="px-4 py-1.5 text-xs font-mono border rounded transition-colors bg-accent-subtle text-accent-text border-accent-primary/50 hover:bg-accent-primary/20"
-          >
-            RUN_LINTER
-          </button>
+          {showLinterButton && (
+            <button
+              onClick={onRunLinter}
+              className="px-4 py-1.5 text-xs font-mono border rounded transition-colors bg-accent-subtle text-accent-text border-accent-primary/50 hover:bg-accent-primary/20"
+            >
+              RUN_LINTER
+            </button>
+          )}
         </div>
       </header>
 

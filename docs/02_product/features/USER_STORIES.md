@@ -285,6 +285,153 @@ CEOが組織全体のレポート品質を把握できるようにする。
 
 ---
 
+## Epic 5: ユーザー体験最適化
+
+継続利用とモチベーション維持のための UX 改善。
+
+### US-013: 検出の厳格さを段階的に調整したい
+
+| 項目 | 内容 |
+|------|------|
+| ユーザー | Manager |
+| 優先度 | Must |
+| ステータス | Ready |
+| 関連機能 | F-001 |
+
+**ストーリー:**
+> As a Manager,
+> I want to see only critical issues initially and gradually see more details as I improve,
+> So that I don't feel overwhelmed when I first start using neumann.
+
+**受け入れ条件:**
+- [ ] 初回表示時は Critical のみ表示される
+- [ ] ヒントメッセージ「まずは重要な問題のみ表示します」が表示される
+- [ ] フィルタで「すべて表示」に手動で切り替え可能
+- [ ] フィルタ設定は localStorage に保存される
+
+**補足・制約:**
+- Progressive Disclosure パターンの実装
+- 初期負荷軽減により離脱率を 50% → 20% に改善する想定
+- 詳細: `docs/issues/001-ambiguity-user-load-tradeoff.md`
+
+---
+
+### US-014: 成長実感を得たい
+
+| 項目 | 内容 |
+|------|------|
+| ユーザー | Manager |
+| 優先度 | Should |
+| ステータス | Ready |
+| 関連機能 | F-002 |
+
+**ストーリー:**
+> As a Manager,
+> I want to see my progress and improvement over time,
+> So that I stay motivated to continue improving my report quality.
+
+**受け入れ条件（v1.0 基本版）:**
+- [ ] スコア推移グラフ（週次）が表示される
+- [ ] 前回との差分表示（「先週より +15pt」）が表示される
+- [ ] データは localStorage に保存される
+
+**受け入れ条件（v1.1 拡張）:**
+- [ ] パターン別の改善状況（レーダーチャート）
+- [ ] 達成バッジシステム（「3週連続スコア80以上」等）
+- [ ] 目標ラインとの比較表示
+
+**補足・制約:**
+- Visual Feedback パターンの実装
+- 継続利用率を 2週目アクセス率 50% → 80% に改善する想定
+- v1.0 では基本版、v1.1 で拡張版を実装
+- 詳細: `docs/issues/001-ambiguity-user-load-tradeoff.md`
+
+---
+
+### US-015: AI に情報を収集してほしい
+
+| 項目 | 内容 |
+|------|------|
+| ユーザー | Manager |
+| 優先度 | Should |
+| ステータス | Ready |
+| 関連機能 | F-030（新規） |
+
+**ストーリー:**
+> As a Manager,
+> I want AI to automatically gather relevant data from external tools when I write ambiguous statements,
+> So that I don't have to manually search for data across multiple systems.
+
+**受け入れ条件（v1.1）:**
+- [ ] Supabase 内部の KPI 実績値を自動取得できる
+- [ ] Google Sheets と OAuth 連携できる
+- [ ] 取得したデータが FactCard として表示される
+- [ ] データソース名が明示される（「データソース: KPI実績値」等）
+- [ ] ユーザーが手動でコピーして本文に貼り付けられる
+
+**受け入れ条件（v1.2）:**
+- [ ] Salesforce と連携できる
+- [ ] ワンクリックで本文に適用できる
+- [ ] AI が推論ロジックを説明する（「商談化率が言及されているため」等）
+
+**補足・制約:**
+- v1.1 ではルールベース推論（曖昧性パターン → 情報源のマッピング）
+- v1.2 で AI 推論（Tool Calling）に拡張
+- 詳細: `docs/issues/002-autonomous-fact-gathering.md`
+
+**例**:
+```
+入力: 「全体的に厳しい状況です」
+検出: 定量性不足
+
+💡 AI が関連情報を取得しました:
+┌─────────────────────────────┐
+│ 📊 データソース: KPI実績値     │
+│                              │
+│ 商談化率:                     │
+│ • 前月: 25%                   │
+│ • 今月: 10%                   │
+│ • 差分: -15pt                 │
+│                              │
+│ [値をコピー]                  │
+└─────────────────────────────┘
+```
+
+---
+
+### US-016: 情報ソースを管理したい
+
+| 項目 | 内容 |
+|------|------|
+| ユーザー | CEO |
+| 優先度 | Should |
+| ステータス | Ready |
+| 関連機能 | F-031（新規） |
+
+**ストーリー:**
+> As a CEO,
+> I want to manage which data sources neumann can access,
+> So that I can control privacy and ensure only relevant data is used.
+
+**受け入れ条件（v1.1）:**
+- [ ] Google Sheets との連携を ON/OFF できる
+- [ ] 連携済みの Google Sheets 一覧を確認できる
+- [ ] セル範囲のマッピングを手動で設定できる
+- [ ] 連携を解除できる
+
+**受け入れ条件（v1.2）:**
+- [ ] Salesforce との連携を ON/OFF できる
+- [ ] データ取得のログを確認できる（どのデータをいつ取得したか）
+- [ ] データキャッシュの有効期限を設定できる
+
+**補足・制約:**
+- セキュリティ原則: 最小権限（read-only）、透明性、ユーザー管理
+- OAuth スコープ: `https://www.googleapis.com/auth/spreadsheets.readonly`
+- データキャッシュ: デフォルト 24時間で削除
+- 詳細: `docs/issues/002-autonomous-fact-gathering.md`
+
+---
+
 ## Priority Matrix
 
 | ID | ストーリー | 価値 | 工数 | 優先度 |
@@ -294,6 +441,10 @@ CEOが組織全体のレポート品質を把握できるようにする。
 | US-003 | 品質スコア表示 | High | Low | Must |
 | US-004 | 改善案表示 | High | Medium | Must |
 | US-005 | レポート作成・編集 | High | High | Must |
+| US-013 | Progressive Disclosure | High | Low | Must |
+| US-014 | Visual Feedback（基本版） | Medium | Medium | Should |
+| US-015 | AI による情報収集 | High | Medium | Should |
+| US-016 | 情報ソース管理 | Medium | Low | Should |
 | US-006 | リアルタイム検出 | Medium | High | Should |
 | US-007 | ダッシュボード | Medium | Medium | Should |
 | US-008 | チーム管理 | Medium | Medium | Should |
@@ -308,7 +459,9 @@ CEOが組織全体のレポート品質を把握できるようにする。
 | 日付 | 変更内容 | 担当 |
 |------|----------|------|
 | 2026-01-23 | 初版作成（US-001〜US-012） | AI |
+| 2026-02-22 | Epic 5 追加、US-013（Progressive Disclosure）、US-014（Visual Feedback）追加 | AI |
+| 2026-02-22 | US-015（AI による情報収集）、US-016（情報ソース管理）追加 | AI |
 
 ---
 
-*最終更新: 2026-01-23*
+*最終更新: 2026-02-22*

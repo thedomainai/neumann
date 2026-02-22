@@ -7,10 +7,11 @@
 
 'use client';
 
-import { type FC } from 'react';
+import { type FC, useMemo } from 'react';
 import { Activity, ArrowRight } from 'lucide-react';
 import { TreeNode } from './TreeNode';
 import type { KPITreeNode } from '@/domain/kpi/types';
+import { calculateSystemHealth, getSystemStatusColor, getAmbiguityLevelColor } from '@/domain/kpi/utils';
 import type { ViewType } from '@/shared/components';
 
 export interface DashboardViewProps {
@@ -22,6 +23,9 @@ export const DashboardView: FC<DashboardViewProps> = ({
   kpiData,
   onNavigate,
 }) => {
+  // システム全体の健全性を算出
+  const systemHealth = useMemo(() => calculateSystemHealth(kpiData), [kpiData]);
+
   return (
     <div className="h-full flex flex-col p-6 overflow-hidden">
       {/* Header */}
@@ -31,8 +35,8 @@ export const DashboardView: FC<DashboardViewProps> = ({
           System Observability
         </h2>
         <p className="text-foreground-muted text-sm font-mono">
-          STATUS: <span className="text-severity-warning-text">DEGRADED</span> | AMBIGUITY
-          LEVEL: HIGH
+          STATUS: <span className={getSystemStatusColor(systemHealth.status)}>{systemHealth.status}</span> | AMBIGUITY
+          LEVEL: <span className={getAmbiguityLevelColor(systemHealth.ambiguityLevel)}>{systemHealth.ambiguityLevel}%</span>
         </p>
       </header>
 
