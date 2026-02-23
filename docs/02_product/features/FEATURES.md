@@ -18,6 +18,8 @@
 | F-010 | リアルタイム検出 | 入力中にリアルタイムで曖昧性を検出 | US-006 | Backlog |
 | F-011 | ダッシュボード | 全レポートのサマリ・品質推移表示 | US-007 | Backlog |
 | F-012 | チーム管理 | チームメンバーの管理・権限設定 | US-008 | Backlog |
+| F-030 | 自律的情報収集 | AIが外部ツールから関連データを自動取得し改善案を提示 | US-015 | Planning |
+| F-031 | 情報ソース管理 | データソースの連携設定・アクセス制御 | US-016 | Planning |
 
 ### Nice to Have (Could Have)
 
@@ -197,12 +199,147 @@ Quality Score = 100 - (Critical × 5 + Warning × 2 + Info × 1)
 
 ---
 
+### F-030: 自律的情報収集（Autonomous Fact Gathering）
+
+**概要:**
+曖昧性検出時に、AIが外部ツール（Supabase, Google Sheets, Salesforce等）から関連データを自律的に取得し、改善案を提示する。
+
+**ユーザーフロー:**
+1. ユーザーが曖昧な表現を入力（例: 「全体的に厳しい状況です」）
+2. F-001が曖昧性を検出（例: 定量性不足）
+3. F-030が関連データを自律取得
+   - ルールベース推論で情報源を特定
+   - データソースから値を取得（前月比、KPI実績値等）
+4. FactCardでデータと改善案を表示
+5. ユーザーが確認して適用
+
+**段階的実装:**
+
+| フェーズ | データソース | 推論方式 | UX | 実装期間 |
+|---------|------------|---------|----|----|
+| **v1.1** | Supabase, Google Sheets | ルールベース | 情報提示（コピー） | 2週間 |
+| **v1.2** | + Salesforce | ハイブリッド（ルール + AI） | ワンクリック適用 | 4週間 |
+| **v2.0** | + Notion, Slack, GitHub | AI 推論（Tool Calling） | 自動適用（オプション） | 8週間 |
+
+**v1.1 実装範囲:**
+- Supabase 内部データ参照（KPI実績値、前月比計算）
+- Google Sheets 連携（OAuth 2.0 + Sheets API）
+- FactCard コンポーネント（カード形式で表示）
+- ルールベース推論エンジン（曖昧性パターン → 情報源マッピング）
+
+**UI イメージ（v1.1）:**
+```
+💡 AI が関連情報を取得しました:
+┌─────────────────────────────┐
+│ 📊 データソース: KPI実績値     │
+│                              │
+│ 商談化率:                     │
+│ • 前月: 25%                   │
+│ • 今月: 10%                   │
+│ • 差分: -15pt                 │
+│                              │
+│ [値をコピー]                  │
+└─────────────────────────────┘
+```
+
+**技術要件:**
+- `src/domain/audit/inference-rules.ts`: ルールベース推論エンジン
+- `src/domain/audit/fact-gathering.ts`: 情報収集ロジック
+- `src/lib/integrations/google-sheets.ts`: Google Sheets API クライアント
+- `src/features/editor/components/FactCard.tsx`: データ表示カード
+- `src/domain/kpi/utils.ts`: KPI実績値取得関数
+
+**セキュリティ要件:**
+- OAuth スコープ: `https://www.googleapis.com/auth/spreadsheets.readonly`（read-only）
+- データキャッシュ: 24時間で自動削除
+- ログ記録: PII のマスキング
+- RLS（Row Level Security）: Supabase 内部データのアクセス制御
+
+**成功指標（v1.1）:**
+- ユーザーが手入力する情報量が 30% 削減
+- データ取得の成功率が 80% 以上
+- 誤推論率が 10% 以下
+
+**依存関係:**
+- 前提: F-001（曖昧性検出）
+- 後続: F-031（情報ソース管理）
+
+**詳細仕様:**
+- `docs/05_decisions/DEC-009-autonomous-fact-gathering.md`
+- `docs/issues/002-autonomous-fact-gathering.md`
+
+---
+
+### F-031: 情報ソース管理（Data Source Management）
+
+**概要:**
+F-030が使用するデータソースの連携設定・アクセス制御を管理する。
+
+**ユーザーフロー（CEO）:**
+1. 設定画面で「データソース」タブを開く
+2. 連携可能なツール一覧を表示（Google Sheets, Salesforce等）
+3. 連携したいツールを選択してOAuth認証
+4. セル範囲のマッピングを手動設定（v1.1）
+5. 連携状態を確認・解除
+
+**管理項目:**
+
+| 項目 | 説明 | v1.1 | v1.2 |
+|------|------|------|------|
+| 連携ON/OFF | データソースごとに有効化・無効化 | ✅ | ✅ |
+| OAuth認証 | Google Sheets, Salesforce等の認証 | ✅（Sheets） | ✅（+ SF） |
+| セル範囲マッピング | Google Sheetsのセル範囲を手動指定 | ✅ | ✅（AI推論） |
+| データ取得ログ | いつ何のデータを取得したか履歴表示 | - | ✅ |
+| キャッシュ設定 | データキャッシュの有効期限設定 | - | ✅ |
+
+**UI/UX要件（v1.1）:**
+```
+データソース設定
+┌─────────────────────────────────────┐
+│ Google Sheets                       │
+│ [✅ 連携中] [連携を解除]              │
+│                                     │
+│ 連携済みシート:                      │
+│ • KPI管理シート (セル範囲: A1:D10)   │
+│ • 売上管理シート (セル範囲: B2:F20)  │
+│                                     │
+│ [新しいシートを追加]                  │
+└─────────────────────────────────────┘
+
+Salesforce
+[連携する] （v1.2で実装予定）
+```
+
+**技術要件:**
+- `src/features/settings/components/DataSourceSettings.tsx`: 設定UI
+- `src/lib/integrations/oauth-manager.ts`: OAuth統合管理
+- `src/domain/integrations/schema.ts`: データソース設定のスキーマ
+- Supabase テーブル: `data_source_connections`
+
+**セキュリティ原則:**
+1. **最小権限**: 必要最小限のデータのみ取得
+2. **透明性**: どのデータを取得したか明示
+3. **ユーザー管理**: 連携の ON/OFF をユーザーが制御
+4. **データ保持期間**: 取得データは 24 時間でキャッシュ削除
+
+**依存関係:**
+- 前提: F-030（自律的情報収集）
+- 後続: なし
+
+**詳細仕様:**
+- `docs/05_decisions/DEC-009-autonomous-fact-gathering.md`
+
+---
+
 ## Feature Flags
 
 | フラグ名 | 機能 | 環境 | デフォルト |
 |----------|------|------|-----------|
 | `ENABLE_REALTIME_DETECTION` | リアルタイム検出 | Production | false |
-| `ENABLE_GOOGLE_INTEGRATION` | Google連携 | Staging | false |
+| `ENABLE_AUTONOMOUS_FACT_GATHERING` | 自律的情報収集 | Staging | false |
+| `ENABLE_GOOGLE_SHEETS_INTEGRATION` | Google Sheets連携 | Staging | false |
+| `ENABLE_SALESFORCE_INTEGRATION` | Salesforce連携 | Staging | false |
+| `ENABLE_GOOGLE_INTEGRATION` | Google連携（廃止予定） | Staging | false |
 | `ENABLE_NOTION_INTEGRATION` | Notion連携 | Staging | false |
 
 ---
@@ -220,7 +357,8 @@ Quality Score = 100 - (Critical × 5 + Warning × 2 + Info × 1)
 | 日付 | 変更内容 | 担当 |
 |------|----------|------|
 | 2026-01-23 | 初版作成（F-001〜F-024） | AI |
+| 2026-02-23 | F-030（自律的情報収集）、F-031（情報ソース管理）追加。DEC-009の決定内容を反映 | AI |
 
 ---
 
-*最終更新: 2026-01-23*
+*最終更新: 2026-02-23*

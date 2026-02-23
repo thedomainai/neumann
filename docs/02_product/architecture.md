@@ -37,6 +37,12 @@ graph TB
         AI[Vercel AI SDK<br/>Claude API]
         GWS[Google Workspace<br/>Docs/Slides/Sheets]
         NotionAPI[Notion API]
+        Salesforce[Salesforce API<br/>v1.2+]
+    end
+
+    subgraph "Data Source Integrations (v1.1+)"
+        GoogleSheets[Google Sheets<br/>OAuth 2.0]
+        SupabaseData[Supabase<br/>KPI Data]
     end
 
     subgraph "Supabase"
@@ -51,6 +57,10 @@ graph TB
     API --> GWS
     API --> NotionAPI
     Features --> Auth
+
+    Domain --> GoogleSheets
+    Domain --> SupabaseData
+    API --> GoogleSheets
 ```
 
 ## Tech Stack
@@ -63,6 +73,8 @@ graph TB
 | **Database** | Supabase PostgreSQL | Managed, RLS support |
 | **ORM** | Drizzle | Type-safe, migrations, schema-first |
 | **Auth** | Supabase Auth | Google OAuth, RLS integration |
+| **Data Integrations** | Google Sheets API | OAuth 2.0, read-only access (v1.1+) |
+| **Data Integrations** | Salesforce API | OAuth 2.0, CRM data (v1.2+) |
 | **Storage** | Supabase Storage | File uploads, signed URLs |
 | **Styling** | Tailwind CSS + shadcn/ui | Design system, accessibility |
 | **Validation** | Zod | Schema sharing (API <-> Client) |
@@ -131,6 +143,7 @@ neumann/
 │   │   │   ├── ReportEditor.tsx
 │   │   │   ├── AuditPanel.tsx
 │   │   │   ├── AuditCard.tsx
+│   │   │   ├── FactCard.tsx      # Fact data display (v1.1+)
 │   │   │   └── index.ts
 │   │   ├── actions.ts
 │   │   └── index.ts
@@ -150,14 +163,21 @@ neumann/
 │   │   │   ├── unclear-action.ts
 │   │   │   └── fact-interpretation-mixing.ts
 │   │   ├── scorer.ts             # Quality scoring
+│   │   ├── inference-rules.ts    # Rule-based inference (v1.1+)
+│   │   ├── fact-gathering.ts     # Autonomous data collection (v1.1+)
 │   │   └── types.ts
 │   │
 │   ├── intervention/             # Autonomous Intervention
 │   │   ├── question-generator.ts
 │   │   └── types.ts
 │   │
-│   └── kpi/                      # KPI Tree Model
-│       ├── tree.ts
+│   ├── kpi/                      # KPI Tree Model
+│   │   ├── tree.ts
+│   │   ├── utils.ts              # KPI data retrieval (v1.1+)
+│   │   └── types.ts
+│   │
+│   └── integrations/             # Data source schemas (v1.1+)
+│       ├── schema.ts
 │       └── types.ts
 │
 ├── shared/                       # Shared resources
@@ -184,6 +204,9 @@ neumann/
 │   │   │   ├── docs.ts
 │   │   │   ├── slides.ts
 │   │   │   └── sheets.ts
+│   │   ├── google-sheets.ts      # Google Sheets API client (v1.1+)
+│   │   ├── salesforce.ts         # Salesforce API client (v1.2+)
+│   │   ├── oauth-manager.ts      # OAuth integration manager (v1.1+)
 │   │   └── notion/
 │   │       ├── client.ts
 │   │       └── parser.ts
@@ -323,7 +346,7 @@ domain/ ← lib/ai/, lib/db/（domain は lib に依存しない）
 
 ```typescript
 // lib/db/schema.ts
-import { pgTable, uuid, text, timestamp, jsonb, integer } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, jsonb, integer, boolean } from "drizzle-orm/pg-core";
 
 // Users (Supabase Auth連携)
 export const users = pgTable("users", {
@@ -367,6 +390,28 @@ export const kpiNodes = pgTable("kpi_nodes", {
   currentValue: text("current_value"),
   ownerId: uuid("owner_id").references(() => users.id),
   order: integer("order").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Data Source Connections (v1.1+)
+export const dataSourceConnections = pgTable("data_source_connections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  provider: text("provider").notNull(), // google_sheets | salesforce | notion
+  isEnabled: boolean("is_enabled").default(true).notNull(),
+  credentials: jsonb("credentials").notNull(), // OAuth tokens, encrypted
+  settings: jsonb("settings"), // Cell mappings, API endpoints, etc.
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Fact Cache (v1.1+)
+export const factCache = pgTable("fact_cache", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sourceId: uuid("source_id").references(() => dataSourceConnections.id).notNull(),
+  dataKey: text("data_key").notNull(), // e.g., "conversion_rate_2025_02"
+  dataValue: jsonb("data_value").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(), // Default: 24h
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 ```
@@ -526,8 +571,17 @@ neumann/
 
 ---
 
-**ステータス**: ✅ 承認済 (v2)
+## Changelog
+
+| 日付 | 変更内容 | 担当 |
+|------|----------|------|
+| 2026-01-22 | vercel-stack ベースで再設計 | 協働 |
+| 2026-02-23 | 自律的情報収集機能（F-030, F-031）のアーキテクチャ追加。Data Source Integrations、ディレクトリ構成、DBスキーマを更新 | AI |
+
+---
+
+**ステータス**: ✅ 承認済 (v3)
 **オーナー**: 協働
-**最終更新**: 2026-01-22
-**変更理由**: vercel-stack ベースでの再設計
-**承認日**: 2026-01-22
+**最終更新**: 2026-02-23
+**変更理由**: 自律的情報収集機能のアーキテクチャ追加
+**承認日**: 2026-02-23
