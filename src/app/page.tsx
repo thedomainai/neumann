@@ -159,15 +159,15 @@ export default function Home() {
   const [selectedLine, setSelectedLine] = useState<number | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  // 初回アクセス判定
+  // 初回アクセス判定（一時的に無効化）
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const hasCompletedOnboarding = localStorage.getItem('neumann_onboarding_completed');
-      if (!hasCompletedOnboarding) {
-        router.push('/onboarding');
-      } else {
+      // const hasCompletedOnboarding = localStorage.getItem('neumann_onboarding_completed');
+      // if (!hasCompletedOnboarding) {
+      //   router.push('/onboarding');
+      // } else {
         setIsReady(true);
-      }
+      // }
     }
   }, [router]);
 

@@ -64,10 +64,10 @@ const NavButton: FC<{
       onClick={onClick}
       disabled={disabled}
       title={tooltip}
-      className={`w-full p-3 flex justify-center rounded-lg transition-all ${
+      className={`w-full p-3 flex justify-center rounded-lg transition-all duration-150 ${
         active
-          ? 'text-sidebar-textActive bg-sidebar-active'
-          : 'text-sidebar-text hover:text-sidebar-textActive hover:bg-sidebar-hover'
+          ? 'text-sidebar-textActive bg-sidebar-active shadow-sm border border-purple-500/20'
+          : 'text-sidebar-text hover:text-sidebar-textActive hover:bg-sidebar-hover hover:shadow-sm border border-transparent hover:border-purple-500/10'
       } ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
     >
       {icon}

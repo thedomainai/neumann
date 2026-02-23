@@ -143,6 +143,7 @@ export const colors = {
 export const typography = {
   fontFamily: {
     sans: '"Inter", "Hiragino Sans", "Noto Sans JP", sans-serif',
+    display: '"Space Grotesk", "Inter", sans-serif', // 見出し専用: 幾何学的で存在感
     mono: '"JetBrains Mono", "Source Code Pro", monospace', // 重要: 監査ログやエディタで使用
   },
   fontSize: {
@@ -154,10 +155,11 @@ export const typography = {
     '2xl': '1.5rem',   // 24px
   },
   fontWeight: {
-    light: '300',      // 見出し用（洗練された印象）
-    normal: '400',
-    medium: '500',
-    bold: '700',
+    light: '300',      // 特殊用途のみ
+    normal: '400',     // 補足テキスト
+    medium: '500',     // 本文デフォルト（旧 400 から強化）
+    semibold: '600',   // 見出し・数値（新規追加）
+    bold: '700',       // 大見出し
   },
 } as const;
 
@@ -221,11 +223,22 @@ export const tailwindThemeExtend = {
     purple: PRIMITIVES.purple,
     gray: PRIMITIVES.gray,
   },
-  fontFamily: typography.fontFamily,
+  fontFamily: {
+    sans: typography.fontFamily.sans.split(', '),
+    display: typography.fontFamily.display.split(', '),
+    mono: typography.fontFamily.mono.split(', '),
+  },
   fontSize: typography.fontSize,
   fontWeight: typography.fontWeight,
   spacing,
-  // アニメーション定義 (Midnight Logic特有の「整う」動き)
+  // Shadow System (Subtle Elevation)
+  boxShadow: {
+    'sm': 'var(--shadow-sm)',
+    'md': 'var(--shadow-md)',
+    'lg': 'var(--shadow-lg)',
+    'xl': 'var(--shadow-xl)',
+  },
+  // アニメーション定義 (Purposeful Animation)
   animation: {
     'fade-in': 'fadeIn 0.2s ease-out forwards',
     'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

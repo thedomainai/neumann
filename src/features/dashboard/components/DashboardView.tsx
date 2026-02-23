@@ -30,11 +30,11 @@ export const DashboardView: FC<DashboardViewProps> = ({
     <div className="h-full flex flex-col p-6 overflow-hidden">
       {/* Header */}
       <header className="mb-8">
-        <h2 className="text-2xl font-light text-foreground-primary mb-1 flex items-center">
+        <h2 className="text-2xl font-display font-semibold text-foreground-primary mb-1 flex items-center">
           <Activity className="mr-3 text-accent-text" />
           System Observability
         </h2>
-        <p className="text-foreground-muted text-sm font-mono">
+        <p className="text-foreground-muted text-sm font-mono font-medium">
           STATUS: <span className={getSystemStatusColor(systemHealth.status)}>{systemHealth.status}</span> | AMBIGUITY
           LEVEL: <span className={getAmbiguityLevelColor(systemHealth.ambiguityLevel)}>{systemHealth.ambiguityLevel}%</span>
         </p>
@@ -43,9 +43,9 @@ export const DashboardView: FC<DashboardViewProps> = ({
       {/* Main Grid */}
       <div className="flex-1 grid grid-cols-12 gap-6 overflow-hidden">
         {/* KPI Logic Tree */}
-        <div className="col-span-8 bg-background-layer2 border border-border-default rounded-lg p-4 overflow-y-auto">
+        <div className="col-span-8 bg-background-layer1 border border-border-default rounded-lg p-4 overflow-y-auto shadow-sm">
           <div className="flex justify-between items-center mb-4 pb-2 border-b border-border-subtle">
-            <h3 className="text-sm font-mono text-foreground-secondary">
+            <h3 className="text-sm font-mono font-semibold text-foreground-secondary">
               LOGIC TREE VIEW
             </h3>
             <div className="flex space-x-2 items-center">
@@ -63,14 +63,14 @@ export const DashboardView: FC<DashboardViewProps> = ({
 
         {/* Alerts & Insights */}
         <div className="col-span-4 flex flex-col gap-4">
-          <div className="bg-background-layer2 border border-border-default rounded-lg p-4 flex-1">
-            <h3 className="text-sm font-mono text-foreground-secondary mb-4">
+          <div className="bg-background-layer1 border border-border-default rounded-lg p-4 flex-1 shadow-sm">
+            <h3 className="text-sm font-mono font-semibold text-foreground-secondary mb-4">
               CRITICAL ANOMALIES
             </h3>
             <div className="space-y-3">
               {/* Critical Alert */}
               <div
-                className="p-3 rounded-lg cursor-pointer transition-colors group bg-severity-critical-bg border border-severity-critical-border hover:shadow-sm"
+                className="p-3 rounded-lg cursor-pointer transition-all group bg-severity-critical-bg border border-severity-critical-border hover:shadow-md hover:border-red-500"
                 onClick={() => onNavigate('editor')}
               >
                 <div className="flex justify-between items-start mb-1">

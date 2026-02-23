@@ -9,8 +9,9 @@
 
 @layer base {
   /* フォントの読み込み */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
   /* ===========================================
    * Refined Modern SaaS カラーシステム
@@ -24,6 +25,12 @@
     --color-primary-hover: #7c3aed;  /* purple-600 */
     --color-primary-light: #f3e8ff;  /* purple-100 */
     --color-accent: #8b5cf6;         /* purple-500 */
+
+    /* Shadow System (Subtle Elevation) */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 4px 8px -2px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.16);
 
     /* サイドバー */
     --color-sidebar-bg: #fafaf9;           /* gray-50 */
@@ -71,7 +78,7 @@
   }
 
   body {
-    @apply bg-background-base text-foreground-primary;
+    @apply bg-background-base text-foreground-primary font-medium;
     font-family: 'Inter', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
   }
 
