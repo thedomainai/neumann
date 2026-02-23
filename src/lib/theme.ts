@@ -1,15 +1,19 @@
 /**
  * src/lib/theme.ts
  * * [Library Layer]
- * Midnight Logic - neumann デザインシステム基盤
+ * neumann Design System - Refined Modern SaaS
  *
- * neumannの設計思想「曖昧性の完全排除」を視覚的に表現する
- * ダークテーマベースのデザインシステム。
+ * 設計哲学:
+ * - 直感的: ユーザーの次のアクションが明確
+ * - インタラクションドリブン: デザインがユーザーを導く
+ * - 隠れたゲーミフィケーション: データ可視化で成長を実感
  *
- * コンセプト:
- * - Electric Indigo: 知性と深淵を表すブランドカラー
- * - True Black: 曖昧さを許さない漆黒の背景
- * - High Contrast: 論理構造を浮き上がらせる
+ * カラーコンセプト:
+ * - Warm Neutral Gray: 温かみのあるニュートラルな基調（Notion的）
+ * - Modern Purple: 現代的でテック感のあるアクセント（Linear的）
+ * - High Readability: 経営者向けの視認性重視
+ *
+ * 参考: Linear, Notion, Figma (2026 Design Trends)
  */
 
 /**
@@ -17,43 +21,45 @@
  * デザインシステムを構成する基礎的な色階調
  */
 const PRIMITIVES = {
-  // Electric Indigo: 知性、深淵、AI
-  indigo: {
-    50: '#eef2ff',
-    100: '#e0e7ff',
-    200: '#c7d2fe',
-    300: '#a5b4fc',
-    400: '#818cf8',
-    500: '#6366f1', // Base
-    600: '#4f46e5',
-    700: '#4338ca',
-    800: '#3730a3',
-    900: '#312e81',
-    950: '#1e1b4b',
+  // Warm Neutral Gray (Stone系): 温かみのあるニュートラル
+  // Notionの失敗（視認性の低いGray）を避け、適度な温かみを持たせる
+  gray: {
+    50: '#fafaf9',   // 背景（Tailwind stone-50）
+    100: '#f5f5f4',  // カード背景
+    200: '#e7e5e4',  // ボーダー
+    300: '#d6d3d1',  // 非アクティブ
+    400: '#a8a29e',  // プレースホルダー
+    500: '#78716c',  // アイコン
+    600: '#57534e',  // サブテキスト
+    700: '#44403c',  // -
+    800: '#292524',  // サブテキスト（濃）
+    900: '#1c1917',  // メインテキスト
+    950: '#0c0a09',  // 最深テキスト
   },
-  // Carbon Slate: 無機質、堅牢、構造
-  slate: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
-    700: '#334155',
-    800: '#1e293b',
-    900: '#0f172a',
-    950: '#020617',
+  // Modern Purple (Violet系): 2026年トレンドのVibrant Purple
+  // Linear的なモダンさとテック感を表現
+  purple: {
+    50: '#faf5ff',   // アクセント背景（極薄）
+    100: '#f3e8ff',  // ホバー背景
+    200: '#e9d5ff',  // アクセント薄
+    300: '#d8b4fe',  // -
+    400: '#c084fc',  // -
+    500: '#8b5cf6',  // インタラクティブ default（Tailwind violet-500）
+    600: '#7c3aed',  // ホバー
+    700: '#6d28d9',  // アクティブ
+    800: '#5b21b6',  // -
+    900: '#4c1d95',  // -
+    950: '#2e1065',  // 最深Purple
   },
-  // Mono: 完全な白と黒
+  // Mono: 純粋な白と黒
   mono: {
     white: '#FFFFFF',
-    black: '#0D0D0D',
+    black: '#000000',
   },
-  // Signal Colors
-  red: { 500: '#ef4444', 900: '#7f1d1d' },    // Critical
-  amber: { 500: '#f59e0b', 900: '#78350f' },  // Warning
-  emerald: { 500: '#10b981', 900: '#064e3b' },// Success
+  // Semantic Signal Colors
+  red: { 500: '#ef4444', 900: '#7f1d1d' },      // Critical/Error
+  amber: { 500: '#f59e0b', 900: '#78350f' },    // Warning
+  emerald: { 500: '#10b981', 900: '#064e3b' },  // Success
 } as const;
 
 /**
@@ -212,8 +218,8 @@ export const tailwindThemeExtend = {
     severity: colors.severity,
 
     // プリミティブも必要に応じて直接使えるようにする
-    indigo: PRIMITIVES.indigo,
-    slate: PRIMITIVES.slate,
+    purple: PRIMITIVES.purple,
+    gray: PRIMITIVES.gray,
   },
   fontFamily: typography.fontFamily,
   fontSize: typography.fontSize,
