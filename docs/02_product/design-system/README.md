@@ -1,24 +1,22 @@
 # neumann Design System
 
-経営者向け週次レポート品質管理ツールのデザインシステム。
+AI駆動の週次レポート品質管理ツールのデザインシステム。
 
 ## Design Direction
 
-**Refined Executive（洗練された経営者向け）**
+**AI-Native Glassmorphism（AI時代のグラスモーフィズム）**
 
-3つの要素を融合：
-
-| 優先度 | 方向性 | キーワード | 要素 |
-|--------|--------|-----------|------|
-| Primary | B | 洗練・ミニマル・余白 | 白基調、極限の削ぎ落とし、呼吸感 |
-| Secondary | A | 信頼・重厚・格式 | ネイビー、権威性、プロフェッショナル |
-| Tertiary | C | データ・可視化・精密 | 情報密度、ダッシュボード、数値強調 |
+| キーワード | 要素 |
+|-----------|------|
+| **先進・AI・未来** | ダークグラデーション背景、光るエフェクト |
+| **グラスモーフィズム** | 半透明カード、ぼかし効果、微細なボーダー |
+| **鮮やかなアクセント** | パープル・ブルー・シアンのグラデーション |
 
 ## Design Philosophy
 
-> 「5秒で本質を伝え、深掘りを妨げない」
+> 「AIの力を可視化し、データを美しく伝える」
 
-経営者は時間がない。一目で状況を把握でき、必要なときだけ詳細に潜れるUIを提供する。
+先進的なAIツールにふさわしい、未来感のあるUIを提供。グラスモーフィズムにより、情報の階層を視覚的に表現しながら、洗練された印象を与える。
 
 ## Preview
 
@@ -54,14 +52,15 @@
 ### Brand Colors
 
 ```
-Primary:    Navy      #1e3a5f
-Accent:     Blue      #3b82f6
-Success:    Green     #10b981
-Warning:    Amber     #f59e0b
-Error:      Red       #ef4444
-Background: White     #ffffff
-Surface:    Gray-50   #f9fafb
-Text:       Gray-900  #111827
+Background: Dark Gradient  #0f172a → #1e1b4b → #0c4a6e
+Glass:      White 8%       rgba(255,255,255,0.08)
+Primary:    Indigo         #6366f1
+Accent:     Purple         #a855f7
+Cyan:       Cyan           #06b6d4
+Success:    Emerald        #10b981
+Warning:    Amber          #f59e0b
+Error:      Rose           #f43f5e
+Text:       White          #ffffff (opacity variants)
 ```
 
 ### Typography Scale
